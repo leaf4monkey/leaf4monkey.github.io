@@ -75,16 +75,16 @@
 <span class="keyword">ENV</span> NODE_ENV=production
 
 <span class="comment"># Create app directory</span>
-<span class="keyword">RUN</span><span class="bash"> mkdir -p /usr/src/app
-</span>
-<span class="keyword">WORKDIR</span><span class="bash"> /usr/src/app
-</span>
+<span class="keyword">RUN</span> mkdir -p /usr/src/app
+
+<span class="keyword">WORKDIR</span> /usr/src/app
+
 <span class="comment"># npm install 已经在 docker 镜像构建前完成</span>
 <span class="comment"># RUN npm i</span>
 
-<span class="keyword">COPY</span><span class="bash"> . /usr/src/app
-</span>
-<span class="keyword">CMD</span><span class="bash"> [ <span class="string">"npm"</span>, <span class="string">"start"</span>]</span>
+<span class="keyword">COPY</span> . /usr/src/app
+
+<span class="keyword">CMD</span> [ "npm", "start"]
 </code></pre>
 </li>
 <li><p>compose.yml:</p>
