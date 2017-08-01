@@ -5,18 +5,21 @@
   
   <title>Jenkins 实践（三）：添加 docker 构建和部署环节 | Leaf4monkey 的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="创建并配置 express-hello-world_docker_build 项目 创建并配置 express-hello-world_docker_deploy 项目 提交代码触发构建   创建并配置 express-hello-world_docker_build 项目 General  项目名称: express-hello-world_docker_build  在必要的时候并发构建">
+  <meta name="description" content="创建并配置 express-hello-world_docker_build 项目 创建并配置 express-hello-world_docker_deploy 项目 提交代码触发构建 一点总结   创建并配置 express-hello-world_docker_build 项目 General  项目名称: express-hello-world_docker_build  在必要的时候">
 <meta name="keywords" content="jenkins,practices">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Jenkins 实践（三）：添加 docker 构建和部署环节">
 <meta property="og:url" content="https://leaf4monkey.github.io/Jenkins/jenkins-tutorials/add-docker-build/index.html">
 <meta property="og:site_name" content="Leaf4monkey 的博客">
-<meta property="og:description" content="创建并配置 express-hello-world_docker_build 项目 创建并配置 express-hello-world_docker_deploy 项目 提交代码触发构建   创建并配置 express-hello-world_docker_build 项目 General  项目名称: express-hello-world_docker_build  在必要的时候并发构建">
+<meta property="og:description" content="创建并配置 express-hello-world_docker_build 项目 创建并配置 express-hello-world_docker_deploy 项目 提交代码触发构建 一点总结   创建并配置 express-hello-world_docker_build 项目 General  项目名称: express-hello-world_docker_build  在必要的时候">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2017-08-01T11:17:07.197Z">
+<meta property="og:image" content="https://leaf4monkey.github.io/Jenkins/jenkins-tutorials/add-docker-build/simple-build.jpg">
+<meta property="og:image" content="https://leaf4monkey.github.io/Jenkins/jenkins-tutorials/add-docker-build/full-ci-design.jpg">
+<meta property="og:updated_time" content="2017-08-01T16:51:27.297Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Jenkins 实践（三）：添加 docker 构建和部署环节">
-<meta name="twitter:description" content="创建并配置 express-hello-world_docker_build 项目 创建并配置 express-hello-world_docker_deploy 项目 提交代码触发构建   创建并配置 express-hello-world_docker_build 项目 General  项目名称: express-hello-world_docker_build  在必要的时候并发构建">
+<meta name="twitter:description" content="创建并配置 express-hello-world_docker_build 项目 创建并配置 express-hello-world_docker_deploy 项目 提交代码触发构建 一点总结   创建并配置 express-hello-world_docker_build 项目 General  项目名称: express-hello-world_docker_build  在必要的时候">
+<meta name="twitter:image" content="https://leaf4monkey.github.io/Jenkins/jenkins-tutorials/add-docker-build/simple-build.jpg">
   
     <link rel="alternate" href="/atom.xml" title="Leaf4monkey 的博客" type="application/atom+xml">
   
@@ -100,6 +103,7 @@
 <li><a href="#创建并配置-express-hello-world_docker_build-项目">创建并配置 express-hello-world_docker_build 项目</a></li>
 <li><a href="#创建并配置-express-hello-world_docker_deploy-项目">创建并配置 express-hello-world_docker_deploy 项目</a></li>
 <li><a href="#提交代码触发构建">提交代码触发构建</a></li>
+<li><a href="#一点总结">一点总结</a></li>
 </ul>
 <!-- tocstop -->
 <h2 id="创建并配置-express-hello-world_docker_build-项目"><a href="#创建并配置-express-hello-world-docker-build-项目" class="headerlink" title="创建并配置 express-hello-world_docker_build 项目"></a>创建并配置 express-hello-world_docker_build 项目</h2><ol>
@@ -186,7 +190,17 @@
 </ul>
 </li>
 </ol>
-<h2 id="提交代码触发构建"><a href="#提交代码触发构建" class="headerlink" title="提交代码触发构建"></a>提交代码触发构建</h2><p>至此本系列的全部构建流程已经编写完毕，你可以提交代码检查整个构建流程是否能够正常运作。总结什么的以后再说吧。</p>
+<h2 id="提交代码触发构建"><a href="#提交代码触发构建" class="headerlink" title="提交代码触发构建"></a>提交代码触发构建</h2><p>至此本系列的全部构建流程已经编写完毕，你可以提交代码检查整个构建流程是否能够正常运作。</p>
+<h2 id="一点总结"><a href="#一点总结" class="headerlink" title="一点总结"></a>一点总结</h2><p>本次实践使用一个简单的 nodejs 程序为例创建了一组 Jenkins 构建流程。</p>
+<img src="/Jenkins/jenkins-tutorials/add-docker-build/simple-build.jpg" alt="本次实践创建的构建流程" title="本次实践创建的构建流程">
+<p>本系列的主要目的是为其他像我一样初接触 Jenkins 的人提供一点参考，帮助你完成第一个构建流程的创建和组装，并初步演示并发构建的好处（在一个真正的项目中，由于业务代码和测试代码的体量通常会大很多，因此通常 <code>lint</code> 和 <code>test</code> 消耗的时间也都会长得多，因此需要并发构建来提供构建速度）。不过在实践过程中并未考虑各个独立流程的复用性。</p>
+<p>如果你打算把这次实践中完成的构建流程用于你的多个真实项目，那么毫无疑问，你应当更进一步，把其中部分项目改造成所有同类项目均适用的公共流程（例如本次实践中的 <code>lint</code> 和 <code>test</code> 流程，可以修改为所有 nodejs 项目适用，而不是只适用于 <code>express-hello-world</code> 这个单一的项目）。</p>
+<p>而且你还需要支持多个发布环境，所以你也许需要这样的构建流程：</p>
+<img src="/Jenkins/jenkins-tutorials/add-docker-build/full-ci-design.jpg" alt="个人 YY 的完整构建流程" title="个人 YY 的完整构建流程">
+<p>另外，如前文所述，Jenkins 支持极(duo)为(dao)丰(bian)富(tai)的插件生态，你可以通过搜索引擎，或者在官方网站的 <a href="https://plugins.jenkins.io/" target="_blank" rel="external">Plugins Index</a> 中查找，总有一些适合你。</p>
+<p>另外的另外，Jenkins 2.0 开始已经支持了 pipeline。Pipeline as code，你懂的，如果掌握了的话，就再也不用为你的项目手动配置一大堆繁琐的构建流程模板了，写代码就行了，听起来简直屌炸天。作为一个 DevOps 时代的码农，没什么事是写一页代码解决不了的了，如果有，那就写两页。不过目前我暂时没有打算深入了解，所以请自行搜索吧。</p>
+<p>晚安。</p>
+<p>呸，早安。</p>
 
       
     </div>
