@@ -155,7 +155,7 @@ tar -cf archive.tar . --exclude ./*.tar
 </li>
 </ol>
 <hr>
-<h2 id="创建并配置代码静态检查项目-express-hello-world-lint-test（上一节“构建后步骤”截图中的-express-hello-world-lint-项目）"><a href="#创建并配置代码静态检查项目-express-hello-world-lint-test（上一节“构建后步骤”截图中的-express-hello-world-lint-项目）" class="headerlink" title="创建并配置代码静态检查项目 express-hello-world_lint_test（上一节“构建后步骤”截图中的 express-hello-world_lint 项目）"></a>创建并配置代码静态检查项目 express-hello-world_lint_test（上一节“构建后步骤”截图中的 express-hello-world_lint 项目）</h2><p>该项目用于执行代码静态检查和单元测试，在创建该项目前，你需要首先确认你的 <code>express-hello-world</code> 项目在本地能够正常执行如下命令：</p>
+<h2 id="创建并配置代码静态检查项目-express-hello-world-lint-test"><a href="#创建并配置代码静态检查项目-express-hello-world-lint-test" class="headerlink" title="创建并配置代码静态检查项目 express-hello-world_lint_test"></a>创建并配置代码静态检查项目 express-hello-world_lint_test</h2><p>该项目用于执行代码静态检查和单元测试，在创建该项目前，你需要首先确认你的 <code>express-hello-world</code> 项目在本地能够正常执行如下命令：</p>
 <pre><code class="bash"><span class="meta">#!/bin/sh</span>
 npm run lint
 npm run <span class="built_in">test</span>
@@ -204,4 +204,7 @@ npm run <span class="built_in">test</span>
 </ul>
 </li>
 </ol>
+<blockquote>
+<p><code>express-hello-world_entry</code> 为{% relative_link #创建并配置入口项目-express-hello-world_entry 上一节 “创建并配置入口项目-express-hello-world_entry” %} <code>构建后步骤</code>截图中的 express-hello-world_lint 项目</p>
+</blockquote>
 <h2 id="提交代码触发构建"><a href="#提交代码触发构建" class="headerlink" title="提交代码触发构建"></a>提交代码触发构建</h2><p>现在你可以提交代码触发构建，看 <code>express-hello-world_lint_test</code> 项目是否能够正常运作。</p>
