@@ -5,19 +5,19 @@
   
   <title>Jenkins 实践（二）：集成代码静态检查和单元测试 | Leaf4monkey 的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="概述 为你的项目添加 lint 和测试支持 添加新的配置文件 创建并配置入口项目 express-hello-world_entry 创建并配置代码静态检查项目 express-hello-world_lint_test（上一节 “构建后步骤”截图中的 express-hello-world_lint 项目） 提交代码触发构建   概述上一篇文章 中介绍了如何使用 Jenkins 部署 nod">
+  <meta name="description" content="概述 为你的项目添加 lint 和测试支持 添加新的配置文件 创建并配置入口项目 express-hello-world_entry 创建并配置代码静态检查项目 express-hello-world_lint_test（上一节“构建后步骤”截图中的 express-hello-world_lint 项目） 提交代码触发构建   概述上一篇文章 中介绍了如何使用 Jenkins 部署 node">
 <meta name="keywords" content="jenkins,practices">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Jenkins 实践（二）：集成代码静态检查和单元测试">
 <meta property="og:url" content="https://leaf4monkey.github.io/Jenkins/jenkins-tutorials/integrate-lint-and-test/index.html">
 <meta property="og:site_name" content="Leaf4monkey 的博客">
-<meta property="og:description" content="概述 为你的项目添加 lint 和测试支持 添加新的配置文件 创建并配置入口项目 express-hello-world_entry 创建并配置代码静态检查项目 express-hello-world_lint_test（上一节 “构建后步骤”截图中的 express-hello-world_lint 项目） 提交代码触发构建   概述上一篇文章 中介绍了如何使用 Jenkins 部署 nod">
+<meta property="og:description" content="概述 为你的项目添加 lint 和测试支持 添加新的配置文件 创建并配置入口项目 express-hello-world_entry 创建并配置代码静态检查项目 express-hello-world_lint_test（上一节“构建后步骤”截图中的 express-hello-world_lint 项目） 提交代码触发构建   概述上一篇文章 中介绍了如何使用 Jenkins 部署 node">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https://leaf4monkey.github.io/Jenkins/jenkins-tutorials/integrate-lint-and-test/post-build-config.jpg">
-<meta property="og:updated_time" content="2017-08-01T12:49:55.893Z">
+<meta property="og:updated_time" content="2017-08-01T12:51:04.155Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Jenkins 实践（二）：集成代码静态检查和单元测试">
-<meta name="twitter:description" content="概述 为你的项目添加 lint 和测试支持 添加新的配置文件 创建并配置入口项目 express-hello-world_entry 创建并配置代码静态检查项目 express-hello-world_lint_test（上一节 “构建后步骤”截图中的 express-hello-world_lint 项目） 提交代码触发构建   概述上一篇文章 中介绍了如何使用 Jenkins 部署 nod">
+<meta name="twitter:description" content="概述 为你的项目添加 lint 和测试支持 添加新的配置文件 创建并配置入口项目 express-hello-world_entry 创建并配置代码静态检查项目 express-hello-world_lint_test（上一节“构建后步骤”截图中的 express-hello-world_lint 项目） 提交代码触发构建   概述上一篇文章 中介绍了如何使用 Jenkins 部署 node">
 <meta name="twitter:image" content="https://leaf4monkey.github.io/Jenkins/jenkins-tutorials/integrate-lint-and-test/post-build-config.jpg">
   
     <link rel="alternate" href="/atom.xml" title="Leaf4monkey 的博客" type="application/atom+xml">
@@ -103,7 +103,7 @@
 <li><a href="#为你的项目添加-lint-和测试支持">为你的项目添加 lint 和测试支持</a></li>
 <li><a href="#添加新的配置文件">添加新的配置文件</a></li>
 <li><a href="#创建并配置入口项目-express-hello-world_entry">创建并配置入口项目 express-hello-world_entry</a></li>
-<li><a href="#创建并配置代码静态检查项目-express-hello-world_lint_test-relative_link-创建并配置入口项目-express-hello-world_entry-上一节-创建并配置入口项目-express-hello-world_entry-构建后步骤截图中的-express-hello-world_lint-项目">创建并配置代码静态检查项目 express-hello-world_lint_test（<a href="/Jenkins/jenkins-tutorials/integrate-lint-and-test/#创建并配置入口项目-express-hello-world_entry" title="创建并配置入口项目-express-hello-world_entry" target="_self">上一节</a> “构建后步骤”截图中的 express-hello-world_lint 项目）</a></li>
+<li><a href="#创建并配置代码静态检查项目-express-hello-world_lint_test上一节构建后步骤截图中的-express-hello-world_lint-项目">创建并配置代码静态检查项目 express-hello-world_lint_test（上一节“构建后步骤”截图中的 express-hello-world_lint 项目）</a></li>
 <li><a href="#提交代码触发构建">提交代码触发构建</a></li>
 </ul>
 <!-- tocstop -->
@@ -153,7 +153,7 @@
 </li>
 </ol>
 <hr>
-<h2 id="创建并配置代码静态检查项目-express-hello-world_lint_test上一节-构建后步骤截图中的-express-hello-world_lint-项目"><a href="#创建并配置代码静态检查项目-express-hello-world-lint-test（-“构建后步骤”截图中的-express-hello-world-lint-项目）" class="headerlink" title="创建并配置代码静态检查项目 express-hello-world_lint_test（ “构建后步骤”截图中的 express-hello-world_lint 项目）"></a>创建并配置代码静态检查项目 express-hello-world_lint_test（<a href="/Jenkins/jenkins-tutorials/integrate-lint-and-test/#创建并配置入口项目-express-hello-world_entry" title="创建并配置入口项目-express-hello-world_entry" target="_self">上一节</a> “构建后步骤”截图中的 express-hello-world_lint 项目）</h2><p>该项目用于执行代码静态检查和单元测试，在创建该项目前，你需要首先确认你的 <code>express-hello-world</code> 项目在本地能够正常执行如下命令：</p>
+<h2 id="创建并配置代码静态检查项目-express-hello-world_lint_test上一节构建后步骤截图中的-express-hello-world_lint-项目"><a href="#创建并配置代码静态检查项目-express-hello-world-lint-test（上一节“构建后步骤”截图中的-express-hello-world-lint-项目）" class="headerlink" title="创建并配置代码静态检查项目 express-hello-world_lint_test（上一节“构建后步骤”截图中的 express-hello-world_lint 项目）"></a>创建并配置代码静态检查项目 express-hello-world_lint_test（上一节“构建后步骤”截图中的 express-hello-world_lint 项目）</h2><p>该项目用于执行代码静态检查和单元测试，在创建该项目前，你需要首先确认你的 <code>express-hello-world</code> 项目在本地能够正常执行如下命令：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#!/bin/sh</span></div><div class="line">npm run lint</div><div class="line">npm run <span class="built_in">test</span></div></pre></td></tr></table></figure>
 <p>如果发现该命令尚未配置或执行失败，请再次阅读 <a href="/Jenkins/jenkins-tutorials/integrate-lint-and-test/#为你的项目添加-lint-和测试支持" title="为你的项目添加 lint 和测试支持" target="_self">为你的项目添加 lint 和测试支持</a></p>
 <p>配置：</p>
