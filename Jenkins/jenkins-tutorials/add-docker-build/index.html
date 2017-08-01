@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Jenkins 实践（三）：添加 docker 构建和部署环节 | Dora&#39;s Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="创建并配置 express-hello-world_docker_build 项目 创建并配置 express-hello-world_docker_deploy 项目 提交代码触发构建   创建并配置 express-hello-world_docker_build 项目 General  项目名称: express-hello-world_docker_build  在必要的时候并发构建">
+<meta name="keywords" content="jenkins,practices">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Jenkins 实践（三）：添加 docker 构建和部署环节">
+<meta property="og:url" content="http://localhost:4000/Jenkins/jenkins-tutorials/add-docker-build/index.html">
+<meta property="og:site_name" content="Dora&#39;s Hexo">
+<meta property="og:description" content="创建并配置 express-hello-world_docker_build 项目 创建并配置 express-hello-world_docker_deploy 项目 提交代码触发构建   创建并配置 express-hello-world_docker_build 项目 General  项目名称: express-hello-world_docker_build  在必要的时候并发构建">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2017-08-01T11:17:07.197Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Jenkins 实践（三）：添加 docker 构建和部署环节">
+<meta name="twitter:description" content="创建并配置 express-hello-world_docker_build 项目 创建并配置 express-hello-world_docker_deploy 项目 提交代码触发构建   创建并配置 express-hello-world_docker_build 项目 General  项目名称: express-hello-world_docker_build  在必要的时候并发构建">
+  
+    <link rel="alternate" href="/atom.xml" title="Dora&#39;s Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Dora&#39;s Hexo</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">A Blog System for Dora&#39;s Dream</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://localhost:4000"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-jenkins-tutorials/add-docker-build" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/Jenkins/jenkins-tutorials/add-docker-build/" class="article-date">
+  <time datetime="2017-08-01T10:54:00.000Z" itemprop="datePublished">2017-08-01</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Jenkins/">Jenkins</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Jenkins 实践（三）：添加 docker 构建和部署环节
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <!-- toc -->
+<ul>
+<li><a href="#创建并配置-express-hello-world_docker_build-项目">创建并配置 express-hello-world_docker_build 项目</a></li>
+<li><a href="#创建并配置-express-hello-world_docker_deploy-项目">创建并配置 express-hello-world_docker_deploy 项目</a></li>
+<li><a href="#提交代码触发构建">提交代码触发构建</a></li>
+</ul>
+<!-- tocstop -->
+<h2 id="创建并配置-express-hello-world_docker_build-项目"><a href="#创建并配置-express-hello-world-docker-build-项目" class="headerlink" title="创建并配置 express-hello-world_docker_build 项目"></a>创建并配置 express-hello-world_docker_build 项目</h2><ol>
+<li><p>General</p>
+<ul>
+<li><strong>项目名称</strong>: express-hello-world_docker_build</li>
+<li><input type="checkbox" checked="checked" onclick="return false;"> <strong>在必要的时候并发构建</strong></li>
+<li><input type="checkbox" checked="checked" onclick="return false;"> <strong>Restrict where this project can be run</strong><br>  <strong>Label Expression</strong>: slave-node</li>
+</ul>
+</li>
+<li><p>源码管理</p>
+<ul>
+<li><input type="radio" checked="checked" onclick="return false;"> <strong>None</strong></li>
+</ul>
+</li>
+<li><p>构建环境</p>
+<ul>
+<li><input type="checkbox" checked="checked" onclick="return false;"> <strong>Provide Node &amp; npm bin/ folder to PATH</strong><br>  <strong>NodeJS Installation</strong>: 选择一个合适的 node 版本即可</li>
+</ul>
+</li>
+<li><p>构建</p>
+<ul>
+<li><p><strong>Copy artifacts from another project</strong></p>
+<ul>
+<li><strong>Project name</strong>: express-hello-world_entry</li>
+<li><strong>Which build</strong>: Latest successful build</li>
+<li><strong>Artifacts to copy</strong>: *</li>
+</ul>
+</li>
+<li><p><strong>Execute shell</strong>:</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#!/bin/sh</span></div><div class="line">tar -xf archive.tar</div><div class="line">rm archive.tar</div><div class="line"></div><div class="line">npm i --production -s</div></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Inject environment variables</strong><br>  <strong>Properties File Path</strong>: env.properties</p>
+</li>
+<li><p><strong>Docker Build and Publish</strong></p>
+<ul>
+<li><strong>Repository Name</strong>: <namespace>/express-hello-world</namespace></li>
+<li><strong>Tag</strong>: $IMAGE_TAG</li>
+<li><strong>Docker registry URL</strong>: https://<registry_url>/</registry_url></li>
+<li><strong>Registry credentials</strong>: 使用提前添加到 <code>credentials</code> 中的认证配置</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>构建后操作</p>
+<ul>
+<li><strong>Archive the artifacts</strong><br>  <strong>用于存档的文件</strong>: compose.yml</li>
+</ul>
+</li>
+</ol>
+<h2 id="创建并配置-express-hello-world_docker_deploy-项目"><a href="#创建并配置-express-hello-world-docker-deploy-项目" class="headerlink" title="创建并配置 express-hello-world_docker_deploy 项目"></a>创建并配置 express-hello-world_docker_deploy 项目</h2><p>该项目用于最终将你的程序部署至阿里云容器服务，该项目会等待 <code>express-hello-world_lint_test</code> 和 <code>express-hello-world_docker_build</code> 项目构建完成后才执行。如果你已经忘了这事怎么实现的，请阅读 <a href="/Jenkins/jenkins-tutorials/integrate-lint-and-test#创建并配置入口项目-express-hello-world_entry" title="创建并配置入口项目 express-hello-world_entry" target="_self">上一篇文章</a></p>
+<ol>
+<li><p>General</p>
+<ul>
+<li><strong>项目名称</strong>: express-hello-world_docker_deploy</li>
+</ul>
+</li>
+<li><p>源码管理</p>
+<ul>
+<li><input type="radio" checked="checked" onclick="return false;"> <strong>None</strong></li>
+</ul>
+</li>
+<li><p>构建</p>
+<ul>
+<li><p><strong>Copy artifacts from another project</strong></p>
+<ul>
+<li><strong>Project name</strong>: express-hello-world_docker_build</li>
+<li><strong>Which build</strong>: Latest successful build</li>
+<li><strong>Artifacts to copy</strong>: *</li>
+</ul>
+</li>
+<li><p><strong>Aliyun Container Service Deploy</strong></p>
+<ul>
+<li><strong>MasterURL</strong>: <a href="https://master2g6.cs-cn-beijing.aliyun.com" target="_blank" rel="external">https://master2g6.cs-cn-beijing.aliyun.com</a>:<port></port></li>
+<li><strong>ApplicationName</strong>: express-hello-world</li>
+<li><strong>ComposeTemplate</strong>: compose.yml</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>构建后操作</p>
+<ul>
+<li><strong>Archive the artifacts</strong><br>  <strong>用于存档的文件</strong>: compose.yml</li>
+</ul>
+</li>
+</ol>
+<h2 id="提交代码触发构建"><a href="#提交代码触发构建" class="headerlink" title="提交代码触发构建"></a>提交代码触发构建</h2><p>至此本系列的全部构建流程已经编写完毕，你可以提交代码检查整个构建流程是否能够正常运作。总结什么的以后再说吧。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://localhost:4000/Jenkins/jenkins-tutorials/add-docker-build/" data-id="cj5tgtl5a0000gcfao3e5if0k" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/jenkins/">jenkins</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/practices/">practices</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/Jenkins/jenkins-tutorials/integrate-lint-and-test/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Jenkins 实践（二）：集成代码静态检查和单元测试</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Diary/">Diary</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Jenkins/">Jenkins</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Games/">Games</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PS3/">PS3</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jenkins/">jenkins</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/practices/">practices</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Games/" style="font-size: 20px;">Games</a> <a href="/tags/PS3/" style="font-size: 20px;">PS3</a> <a href="/tags/jenkins/" style="font-size: 10px;">jenkins</a> <a href="/tags/practices/" style="font-size: 10px;">practices</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">七月 2017</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/Jenkins/jenkins-tutorials/add-docker-build/">Jenkins 实践（三）：添加 docker 构建和部署环节</a>
+          </li>
+        
+          <li>
+            <a href="/Jenkins/jenkins-tutorials/integrate-lint-and-test/">Jenkins 实践（二）：集成代码静态检查和单元测试</a>
+          </li>
+        
+          <li>
+            <a href="/Jenkins/jenkins-tutorials/deploy-node-server/">Jenkins 实践（一）：部署一个简单的 node 应用</a>
+          </li>
+        
+          <li>
+            <a href="/Jenkins/jenkins-tutorials/">Jenkins 实践</a>
+          </li>
+        
+          <li>
+            <a href="/Diary/something-thing7/">1st sth</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2017 leaf4monkey<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

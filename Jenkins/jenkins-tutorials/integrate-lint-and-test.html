@@ -1,0 +1,207 @@
+<hr>
+<p>title: Jenkins 实践（二）：集成代码静态检查和单元测试<br>date: 2017-07-30 10:59:00<br>categories:</p>
+<ul>
+<li>Jenkins<br>tags:</li>
+<li>jenkins</li>
+<li>practices</li>
+</ul>
+<hr>
+<!-- toc -->
+<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>{% post_link jenkins-tutorials/deploy-node-server 上一篇文章 %} 中介绍了如何使用 Jenkins 部署 node 应用，但是并没有解决什么实质性的问题。因为大家肯定已经发现了，那些事儿用 docker 就能全干了，何必再额外整个 Jenkins 呢？</p>
+<p>嗯，是时候真(xia)正(ji)搞(ba)些(gao)事情了！</p>
+<p>{% post_link %}</p>
+<hr>
+<h2 id="为你的项目添加-lint-和测试支持"><a href="#为你的项目添加-lint-和测试支持" class="headerlink" title="为你的项目添加 lint 和测试支持"></a>为你的项目添加 lint 和测试支持</h2><ul>
+<li><p>安装必须的依赖：</p>
+<pre><code class="bash"><span class="meta">#!/bin/sh</span>
+npm i -D eslint chai mocha request
+</code></pre>
+</li>
+<li><p>在项目描述文件 <code>package.json</code> 中添加 <code>lint</code> 和 <code>test</code> 命令：</p>
+<pre><code class="json">{
+  <span class="attr">"name"</span>: <span class="string">"express-hello-world"</span>,
+  <span class="attr">"version"</span>: <span class="string">"0.0.1"</span>,
+  <span class="attr">"main"</span>: <span class="string">"index.js"</span>,
+  <span class="attr">"scripts"</span>: {
+    <span class="attr">"lint"</span>: <span class="string">"eslint ."</span>,
+    <span class="attr">"test"</span>: <span class="string">"mocha"</span>,
+    <span class="attr">"start"</span>: <span class="string">"node index.js"</span>
+  },
+  <span class="attr">"author"</span>: <span class="string">""</span>,
+  <span class="attr">"license"</span>: <span class="string">"MIT"</span>,
+  <span class="attr">"description"</span>: <span class="string">""</span>,
+  <span class="attr">"dependencies"</span>: {
+    <span class="attr">"express"</span>: <span class="string">"^4.15.3"</span>
+  },
+  <span class="attr">"devDependencies"</span>: {
+    <span class="attr">"chai"</span>: <span class="string">"^4.1.0"</span>,
+    <span class="attr">"eslint"</span>: <span class="string">"^4.3.0"</span>,
+    <span class="attr">"mocha"</span>: <span class="string">"^3.4.2"</span>,
+    <span class="attr">"request"</span>: <span class="string">"^2.81.0"</span>
+  }
+}
+</code></pre>
+</li>
+<li><p>添加 eslint 配置文件：</p>
+<p>  要在本地执行静态代码检查，应当至少配置 <code>.eslintrc</code>，可参考{% relative_link #添加新的配置文件 下一节 %}</p>
+</li>
+<li><p>添加测试代码：</p>
+<pre><code class="bash"><span class="meta">#!/bin/sh</span>
+touch test.js
+</code></pre>
+<p>  test.js:</p>
+<pre><code class="js"><span class="built_in">require</span>(<span class="string">'../'</span>);
+<span class="keyword">const</span> request = <span class="built_in">require</span>(<span class="string">'request'</span>);
+<span class="keyword">const</span> assert = <span class="built_in">require</span>(<span class="string">'chai'</span>).assert;
+
+describe(<span class="string">'hello world'</span>, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>{
+    it(<span class="string">'请求根路径'</span>, <span class="function"><span class="keyword">function</span> (<span class="params">done</span>) </span>{
+        request.get(<span class="string">'http://localhost:10000'</span>, <span class="function"><span class="keyword">function</span> (<span class="params">err, response, body</span>) </span>{
+            assert.equal(body, <span class="string">'hello world'</span>);
+            done();
+        });
+    });
+});
+</code></pre>
+</li>
+</ul>
+<h2 id="添加新的配置文件"><a href="#添加新的配置文件" class="headerlink" title="添加新的配置文件"></a>添加新的配置文件</h2><ul>
+<li><p>.eslintignore:</p>
+<pre><code>node_modules/
+</code></pre></li>
+<li><p>.eslintrc:</p>
+<pre><code class="json">{
+  <span class="attr">"extends"</span>: <span class="string">"eslint:recommended"</span>,
+  <span class="attr">"globals"</span>: {
+    <span class="attr">"Promise"</span>: <span class="literal">true</span>,
+    <span class="attr">"describe"</span>: <span class="literal">true</span>,
+    <span class="attr">"it"</span>: <span class="literal">true</span>,
+
+    <span class="attr">"Vue"</span>: <span class="literal">true</span>,
+    <span class="attr">"window"</span>: <span class="literal">true</span>,
+    <span class="attr">"document"</span>: <span class="literal">true</span>
+  }
+}
+</code></pre>
+</li>
+</ul>
+<hr>
+<h2 id="创建并配置入口项目-express-hello-world-entry"><a href="#创建并配置入口项目-express-hello-world-entry" class="headerlink" title="创建并配置入口项目 express-hello-world_entry"></a>创建并配置入口项目 express-hello-world_entry</h2><p>该项目用于触发构建，并且为后续构建流程提供原料，配置如下：</p>
+<ol>
+<li><p>General, 源码管理, 构建触发器 配置参见{% relative_link ../deploy-node-server#创建并配置你的第一个-jenkins-项目 上一篇文章 “Jenkins 实践（一）：部署一个简单的 node 应用” %}</p>
+</li>
+<li><p>构建环境</p>
+<p> 在{% relative_link ../deploy-node-server#创建并配置你的第一个-jenkins-项目 上一篇文章 “Jenkins 实践（一）：部署一个简单的 node 应用” %}的基础上新增如下 <strong>Provide Configuration files</strong> 配置：</p>
+<pre><code class="yaml"><span class="string">.eslintrc:</span> <span class="string">ESLINTRC</span>
+<span class="string">.eslintignore:</span> <span class="string">ESLINTIGNORE</span>
+</code></pre>
+</li>
+<li><p>构建</p>
+<ul>
+<li><p>Execute shell:</p>
+<pre><code class="bash"><span class="meta">#!/bin/sh</span>
+<span class="comment"># 如果遇到错误，则退出执行</span>
+<span class="built_in">set</span> -e
+
+<span class="comment"># 使用 GIT_SHA 和时间戳生成 IMAGE_TAG</span>
+GIT_SHA=`git rev-parse --short HEAD || <span class="built_in">echo</span> <span class="string">"GitNotFound"</span>`
+VERSION=0.1
+TIME=`date +%Y%m%d%H%M%S`
+<span class="built_in">export</span> IMAGE_TAG=<span class="variable">$VERSION</span>-<span class="variable">$GIT_SHA</span>-<span class="variable">$TIME</span>
+
+<span class="comment"># 该部分脚本用于处理 jenkins in docker 的用户权限问题，目前好像没有更优雅的处理办法（建议把该部分命令提取为一个公共文件）</span>
+DOCKER_SOCKET=/var/run/docker.sock
+DOCKER_GROUP=docker
+<span class="keyword">if</span> [ -S <span class="variable">${DOCKER_SOCKET}</span> ]; <span class="keyword">then</span>
+  DOCKER_GID=$(<span class="built_in">stat</span> -c <span class="string">'%g'</span> <span class="variable">${DOCKER_SOCKET}</span>)
+  sudo groupadd -<span class="keyword">for</span> -g <span class="variable">${DOCKER_GID}</span> <span class="variable">${DOCKER_GROUP}</span>
+  sudo usermod -aG <span class="variable">${DOCKER_GROUP}</span> <span class="variable">${USER}</span>
+<span class="keyword">fi</span>
+
+<span class="comment"># 删除需要重新写入的文件</span>
+rm -f env.properties
+rm -f .eslintrc
+rm -f .eslintignore
+rm -f Dockerfile
+rm -f compose.yml
+rm -f .dockerignore
+
+<span class="built_in">echo</span> IMAGE_TAG=<span class="variable">$VERSION</span>-<span class="variable">$GIT_SHA</span>-<span class="variable">$TIME</span> &gt;&gt; env.properties
+
+cat env.properties
+
+cp <span class="variable">$ESLINTRC</span> .eslintrc
+cp <span class="variable">$ESLINTIGNORE</span> .eslintignore
+cp <span class="variable">$DOCKERIGNORE</span> .dockerignore
+
+<span class="comment"># 覆盖 Dockerfile（因为开发可能会提交一个不适合当前构建需求的 Dockerfile）</span>
+cp <span class="variable">$DOCKERFILE</span> Dockerfile
+
+<span class="comment"># 将 compose 中的 tag 替换为 $IMAGE_TAG，如果在下一步骤中配置了 Skip tag as latest，则应该执行本行命令</span>
+sed <span class="string">"s/&lt;registry&gt;\/&lt;namespace&gt;\/express\-hello\-world\:latest/&lt;registry&gt;\/&lt;namespace&gt;\/express\-hello\-world\:<span class="variable">${IMAGE_TAG}</span>/g"</span> <span class="variable">$COMPOSE</span> &gt; compose.yml
+
+<span class="comment"># 依赖安装和构建</span>
+npm i -s
+
+<span class="comment"># 删除旧的压缩包并且重新打包</span>
+rm -f archive.tar
+tar -cf archive.tar . --exclude ./*.tar
+</code></pre>
+</li>
+</ul>
+</li>
+<li><p>构建后步骤</p>
+<p> {% any_asset_img post-build-config.jpg 配置 Docker 安装 %}</p>
+</li>
+</ol>
+<hr>
+<h2 id="创建并配置代码静态检查项目-express-hello-world-lint-test-relative-link-创建并配置入口项目-express-hello-world-entry-上一节-“创建并配置入口项目-express-hello-world-entry”-构建后步骤截图中的-express-hello-world-lint-项目"><a href="#创建并配置代码静态检查项目-express-hello-world-lint-test-relative-link-创建并配置入口项目-express-hello-world-entry-上一节-“创建并配置入口项目-express-hello-world-entry”-构建后步骤截图中的-express-hello-world-lint-项目" class="headerlink" title="创建并配置代码静态检查项目 express-hello-world_lint_test({% relative_link #创建并配置入口项目-express-hello-world_entry 上一节 “创建并配置入口项目-express-hello-world_entry” %} 构建后步骤截图中的 express-hello-world_lint 项目)"></a>创建并配置代码静态检查项目 express-hello-world_lint_test({% relative_link #创建并配置入口项目-express-hello-world_entry 上一节 “创建并配置入口项目-express-hello-world_entry” %} <code>构建后步骤</code>截图中的 express-hello-world_lint 项目)</h2><p>该项目用于执行代码静态检查和单元测试，在创建该项目前，你需要首先确认你的 <code>express-hello-world</code> 项目在本地能够正常执行如下命令：</p>
+<pre><code class="bash"><span class="meta">#!/bin/sh</span>
+npm run lint
+npm run <span class="built_in">test</span>
+</code></pre>
+<p>如果发现该命令尚未配置或执行失败，请再次阅读 {% relative_link #为你的项目添加-lint-和测试支持 “为你的项目添加 lint 和测试支持” %}</p>
+<p>配置：</p>
+<ol>
+<li><p>General</p>
+<ul>
+<li>{% checkbox true %} <strong>在必要的时候并发构建</strong></li>
+<li>{% checkbox true %} <strong>Restrict where this project can be run</strong><br>  <strong>Label Expression</strong>: slave-node</li>
+</ul>
+</li>
+<li><p>源码管理</p>
+<ul>
+<li>{% radio true %} <strong>None</strong></li>
+</ul>
+</li>
+<li><p>构建环境</p>
+<ul>
+<li>{% checkbox true %} <strong>Provide Node &amp; npm bin/ folder to PATH</strong><br>  <strong>NodeJS Installation</strong>: 选择一个合适的 node 版本即可</li>
+</ul>
+</li>
+<li><p>构建</p>
+<ul>
+<li><p><strong>Copy artifacts from another project</strong></p>
+<ul>
+<li><strong>Project name</strong>: express-hello-world_entry</li>
+<li><strong>Which build</strong>: Latest successful build</li>
+<li><strong>Artifacts to copy</strong>: *</li>
+</ul>
+</li>
+<li><p><strong>Execute shell</strong>:</p>
+<pre><code class="bash"><span class="meta">#!/bin/sh</span>
+tar -xf archive.tar
+</code></pre>
+</li>
+<li><p><strong>Inject environment variables</strong><br>  <strong>Properties File Path</strong>: env.properties</p>
+</li>
+<li><p><strong>Execute shell</strong>:</p>
+<pre><code class="bash"><span class="meta">#!/bin/sh</span>
+npm run lint
+npm run <span class="built_in">test</span>
+</code></pre>
+</li>
+</ul>
+</li>
+</ol>
+<h2 id="提交代码触发构建"><a href="#提交代码触发构建" class="headerlink" title="提交代码触发构建"></a>提交代码触发构建</h2><p>现在你可以提交代码触发构建，看 <code>express-hello-world_lint_test</code> 项目是否能够正常运作。</p>

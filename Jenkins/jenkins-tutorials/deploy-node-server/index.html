@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Jenkins 实践（一）：部署一个简单的 node 应用 | Dora&#39;s Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="部署 Jenkins 创建并配置一个 nodejs 从节点备用 插件安装 全局工具配置 添加构建流程中会用到的文件 创建一个 Hello World 程序 创建并配置你的第一个 jenkins 项目 提交代码触发构建   部署 Jenkins推荐使用 Jenkins 的 docker 镜像部署，简单。本文中使用某云容器服务部署，使用的 docker 镜像为某云 2.19.2 版本，compos">
+<meta name="keywords" content="jenkins,practices">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Jenkins 实践（一）：部署一个简单的 node 应用">
+<meta property="og:url" content="http://localhost:4000/Jenkins/jenkins-tutorials/deploy-node-server/index.html">
+<meta property="og:site_name" content="Dora&#39;s Hexo">
+<meta property="og:description" content="部署 Jenkins 创建并配置一个 nodejs 从节点备用 插件安装 全局工具配置 添加构建流程中会用到的文件 创建一个 Hello World 程序 创建并配置你的第一个 jenkins 项目 提交代码触发构建   部署 Jenkins推荐使用 Jenkins 的 docker 镜像部署，简单。本文中使用某云容器服务部署，使用的 docker 镜像为某云 2.19.2 版本，compos">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://localhost:4000/Jenkins/jenkins-tutorials/deploy-node-server/create-slave-nodejs.jpg">
+<meta property="og:image" content="http://localhost:4000/Jenkins/jenkins-tutorials/deploy-node-server/config-slave-nodejs.jpg">
+<meta property="og:image" content="http://localhost:4000/Jenkins/jenkins-tutorials/deploy-node-server/global-tools-configuration.jpg">
+<meta property="og:image" content="http://localhost:4000/Jenkins/jenkins-tutorials/deploy-node-server/global-tools-configuration-2.jpg">
+<meta property="og:image" content="http://localhost:4000/Jenkins/jenkins-tutorials/deploy-node-server/first-jenkins-proj.jpg">
+<meta property="og:image" content="http://localhost:4000/Jenkins/jenkins-tutorials/deploy-node-server/config-build-trigger.jpg">
+<meta property="og:image" content="http://localhost:4000/Jenkins/jenkins-tutorials/deploy-node-server/config-docker-build-and-publish.jpg">
+<meta property="og:updated_time" content="2017-08-01T05:19:07.686Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Jenkins 实践（一）：部署一个简单的 node 应用">
+<meta name="twitter:description" content="部署 Jenkins 创建并配置一个 nodejs 从节点备用 插件安装 全局工具配置 添加构建流程中会用到的文件 创建一个 Hello World 程序 创建并配置你的第一个 jenkins 项目 提交代码触发构建   部署 Jenkins推荐使用 Jenkins 的 docker 镜像部署，简单。本文中使用某云容器服务部署，使用的 docker 镜像为某云 2.19.2 版本，compos">
+<meta name="twitter:image" content="http://localhost:4000/Jenkins/jenkins-tutorials/deploy-node-server/create-slave-nodejs.jpg">
+  
+    <link rel="alternate" href="/atom.xml" title="Dora&#39;s Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Dora&#39;s Hexo</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">A Blog System for Dora&#39;s Dream</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://localhost:4000"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-jenkins-tutorials/deploy-node-server" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/Jenkins/jenkins-tutorials/deploy-node-server/" class="article-date">
+  <time datetime="2017-07-27T02:59:00.000Z" itemprop="datePublished">2017-07-27</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Jenkins/">Jenkins</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Jenkins 实践（一）：部署一个简单的 node 应用
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <!-- toc -->
+<ul>
+<li><a href="#部署-jenkins">部署 Jenkins</a></li>
+<li><a href="#创建并配置一个-nodejs-从节点备用">创建并配置一个 nodejs 从节点备用</a></li>
+<li><a href="#插件安装">插件安装</a></li>
+<li><a href="#全局工具配置">全局工具配置</a></li>
+<li><a href="#添加构建流程中会用到的文件">添加构建流程中会用到的文件</a></li>
+<li><a href="#创建一个-hello-world-程序">创建一个 Hello World 程序</a></li>
+<li><a href="#创建并配置你的第一个-jenkins-项目">创建并配置你的第一个 jenkins 项目</a></li>
+<li><a href="#提交代码触发构建">提交代码触发构建</a></li>
+</ul>
+<!-- tocstop -->
+<h2 id="部署-jenkins"><a href="#部署-Jenkins" class="headerlink" title="部署 Jenkins"></a>部署 Jenkins</h2><p>推荐使用 Jenkins 的 docker 镜像部署，简单。<br>本文中使用某云容器服务部署，使用的 docker 镜像为某云 2.19.2 版本，compose.yml 如下：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div></pre></td><td class="code"><pre><div class="line"><span class="attr">jenkins:</span></div><div class="line"><span class="attr">    image:</span> <span class="string">'&lt;registry&gt;/&lt;namespace&gt;/jenkins'</span></div><div class="line"><span class="attr">    volumes:</span></div><div class="line">        <span class="comment"># jenkins home 映射</span></div><div class="line"><span class="bullet">        -</span> <span class="string">/var/lib/docker/jenkins:/var/jenkins_home</span></div><div class="line">        </div><div class="line">        <span class="comment"># 时区映射</span></div><div class="line"><span class="bullet">        -</span> <span class="string">/etc/localtime:/etc/localtime:ro</span></div><div class="line"><span class="bullet">        -</span> <span class="string">/etc/timezone:/etc/timezone:ro</span></div><div class="line">        </div><div class="line">        <span class="comment"># .ssh 映射，供 jenkins 内 git 工具使用</span></div><div class="line"><span class="bullet">        -</span> <span class="string">/root/.ssh:/root/.ssh:ro</span></div><div class="line"><span class="attr">    privileged:</span> <span class="literal">true</span></div><div class="line"><span class="attr">    restart:</span> <span class="string">always</span> </div><div class="line"><span class="attr">    labels:</span></div><div class="line">        <span class="comment"># 此处省略，主要是端口映射和健康检查等配置</span></div><div class="line"><span class="attr">    links:</span></div><div class="line"><span class="bullet">        -</span> <span class="string">slave-nodejs</span></div><div class="line">        </div><div class="line"><span class="comment"># nodejs 从节点</span></div><div class="line"><span class="attr">slave-nodejs:</span></div><div class="line"><span class="attr">    image:</span> <span class="string">'&lt;registry&gt;/&lt;namespace&gt;/jenkins-slave-dind-nodejs'</span></div><div class="line"><span class="attr">    volumes:</span></div><div class="line"><span class="bullet">        -</span> <span class="string">/var/run/docker.sock:/var/run/docker.sock</span></div><div class="line"><span class="bullet">        -</span> <span class="string">/etc/localtime:/etc/localtime:ro</span></div><div class="line"><span class="bullet">        -</span> <span class="string">/etc/timezone:/etc/timezone:ro</span></div><div class="line"><span class="attr">    restart:</span> <span class="string">always</span> </div><div class="line"><span class="attr">    labels:</span></div><div class="line">        <span class="comment"># 此处省略</span></div><div class="line">        </div><div class="line"><span class="comment"># 如果你希望增加其他语言环境，可以搜索其他语言的从节点镜像。</span></div></pre></td></tr></table></figure>
+<p>如果你想使用某云以外的平台部署 jenkins，建议参考：<br><a href="http://www.jianshu.com/p/33896fdaad77" target="_blank" rel="external">基于Docker版jenkins的持续集成环境搭建(二)</a></p>
+<p>如果你不打算使用 docker 来部署 Jenkins：<br><a href="http://blog.csdn.net/wangmuming/article/details/22925127/" target="_blank" rel="external">Jenkins入门系列之——02第二章 Jenkins安装与配置</a></p>
+<hr>
+<h2 id="创建并配置一个-nodejs-从节点备用"><a href="#创建并配置一个-nodejs-从节点备用" class="headerlink" title="创建并配置一个 nodejs 从节点备用"></a>创建并配置一个 nodejs 从节点备用</h2><p>登入 Jenkins –&gt; Jenkins –&gt; 系统管理 –&gt; 管理节点 –&gt; 新建节点：</p>
+<img src="/Jenkins/jenkins-tutorials/deploy-node-server/create-slave-nodejs.jpg" alt="创建一个 nodejs 从节点以提供 nodejs 构建环境" title="创建一个 nodejs 从节点以提供 nodejs 构建环境">
+<p>然后照下图所示配置该节点：</p>
+<img src="/Jenkins/jenkins-tutorials/deploy-node-server/config-slave-nodejs.jpg" alt="配置 nodejs 从节点" title="配置 nodejs 从节点">
+<hr>
+<h2 id="插件安装"><a href="#插件安装" class="headerlink" title="插件安装"></a>插件安装</h2><p>本文及后续文章中需要安装的插件包括：</p>
+<ul>
+<li><a href="https://wiki.jenkins.io/display/JENKINS/Aliyun+Container+Service+Deploy+Plugin" target="_blank" rel="external">Aliyun-Container-Service-Deploy</a></li>
+<li><a href="https://wiki.jenkins-ci.org/display/JENKINS/CloudBees+Docker+Build+and+Publish+plugin" target="_blank" rel="external">CloudBees Docker Build and Publish plugin</a></li>
+<li><a href="https://wiki.jenkins-ci.org/display/JENKINS/Config+File+Provider+Plugin" target="_blank" rel="external">Config File Provider Plugin</a></li>
+<li><a href="http://wiki.jenkins-ci.org/display/JENKINS/Copy+Artifact+Plugin" target="_blank" rel="external">Copy Artifact Plugin</a></li>
+<li><a href="https://wiki.jenkins-ci.org/display/JENKINS/Docker+Commons+Plugin" target="_blank" rel="external">Docker Commons Plugin</a></li>
+<li><a href="http://wiki.jenkins-ci.org/display/JENKINS/Docker+Plugin" target="_blank" rel="external">Docker plugin</a></li>
+<li><a href="https://wiki.jenkins-ci.org/display/JENKINS/EnvInject+Plugin" target="_blank" rel="external">Environment Injector Plugin</a></li>
+<li><a href="http://wiki.jenkins-ci.org/display/JENKINS/Join+Plugin" target="_blank" rel="external">Join plugin</a></li>
+<li><a href="http://wiki.jenkins-ci.org/display/JENKINS/Parameterized+Trigger+Plugin" target="_blank" rel="external">Parameterized Trigger plugin</a></li>
+</ul>
+<p>Jenkins 具有非(duo)常(dao)丰(bian)富(tai)的插件生态，你可以通过搜索引擎，或者在官方网站的 <a href="https://plugins.jenkins.io/" target="_blank" rel="external">Plugins Index</a> 中查找更多插件，以实现你的个(zhe)性(teng)化需求。</p>
+<hr>
+<h2 id="全局工具配置"><a href="#全局工具配置" class="headerlink" title="全局工具配置"></a>全局工具配置</h2><p>Jenkins –&gt; 系统管理 –&gt; Managed files –&gt; Add a new Config：</p>
+<img src="/Jenkins/jenkins-tutorials/deploy-node-server/global-tools-configuration.jpg" alt="配置 git 和 nodejs 安装" title="配置 git 和 nodejs 安装">
+<img src="/Jenkins/jenkins-tutorials/deploy-node-server/global-tools-configuration-2.jpg" alt="配置 Docker 安装" title="配置 Docker 安装">
+<hr>
+<h2 id="添加构建流程中会用到的文件"><a href="#添加构建流程中会用到的文件" class="headerlink" title="添加构建流程中会用到的文件"></a>添加构建流程中会用到的文件</h2><p>Jenkins –&gt; 系统管理 –&gt; Global Tool Configuration：</p>
+<ul>
+<li><p>Dockerfile:</p>
+  <figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># 建议生产环境不要使用 alpine 镜像，避免踩坑</span></div><div class="line"><span class="keyword">FROM</span> node:<span class="number">6.9</span>.<span class="number">5</span>-alpine</div><div class="line"></div><div class="line"><span class="comment"># 环境变量</span></div><div class="line"><span class="keyword">ENV</span> NODE_ENV=production</div><div class="line"></div><div class="line"><span class="comment"># Create app directory</span></div><div class="line"><span class="keyword">RUN</span> mkdir -p /usr/src/app</div><div class="line"></div><div class="line"><span class="keyword">WORKDIR</span> /usr/src/app</div><div class="line"></div><div class="line"><span class="comment"># npm install 已经在 docker 镜像构建前完成</span></div><div class="line"><span class="comment"># RUN npm i</span></div><div class="line"></div><div class="line"><span class="keyword">COPY</span> . /usr/src/app</div><div class="line"></div><div class="line"><span class="keyword">CMD</span> [ "npm", "start"]</div></pre></td></tr></table></figure>
+</li>
+<li><p>compose.yml:</p>
+  <figure class="highlight yaml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="attr">express-hello-world:</span></div><div class="line"><span class="attr">  image:</span> <span class="string">'&lt;registry&gt;/&lt;namespace&gt;/express-hello-world:latest'</span></div><div class="line"><span class="attr">  environment:</span></div><div class="line"><span class="bullet">    -</span> <span class="string">'TIME_ZONE=Asia/Shanghai'</span></div><div class="line"><span class="bullet">    -</span> <span class="string">'PORT=80'</span></div><div class="line"><span class="attr">  labels:</span></div><div class="line">    <span class="string">aliyun.routing.port_80:</span> <span class="string">'mtest.duolayimeng.com/stc'</span></div><div class="line">    <span class="string">aliyun.probe.url:</span> <span class="string">"tcp://container:80"</span></div><div class="line">    <span class="string">aliyun.probe.initial_delay_seconds:</span> <span class="string">"5"</span></div><div class="line">    <span class="string">aliyun.probe.timeout_seconds:</span> <span class="string">"3"</span></div><div class="line">    <span class="string">aliyun.rolling_updates:</span> <span class="string">'true'</span></div><div class="line">    <span class="string">aliyun.log.timestamp:</span> <span class="string">"false"</span></div><div class="line">    <span class="string">aliyun.scale:</span> <span class="string">'1'</span></div><div class="line"></div><div class="line"><span class="attr">  ports:</span></div><div class="line"><span class="bullet">    -</span> <span class="string">'80/tcp'</span></div><div class="line"><span class="attr">  restart:</span> <span class="string">always</span></div></pre></td></tr></table></figure>
+</li>
+<li><p>.dockerignore:</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">.*</div><div class="line">label/</div><div class="line">dist_linux/</div><div class="line">dist_linux.*</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<hr>
+<h2 id="创建一个-hello-world-程序"><a href="#创建一个-Hello-World-程序" class="headerlink" title="创建一个 Hello World 程序"></a>创建一个 Hello World 程序</h2><p>按照惯例，一开始总要写点什么东西来问候下世界，这里假设你已经具备了 nodejs 和 git 基础，并且使用 gitlab 无障碍。象征性地贴下项目创建过程及主要代码：</p>
+<p>创建项目：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#!/bin/sh</span></div><div class="line">mkdir express-hello-world</div><div class="line"><span class="built_in">cd</span> express-hello-world</div><div class="line">npm init</div><div class="line">npm i -S express</div><div class="line">touch index.js</div></pre></td></tr></table></figure>
+<p>index.js:</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> app = <span class="built_in">require</span>(<span class="string">'express'</span>)();</div><div class="line"></div><div class="line"><span class="comment">// 'GET http://localhost:10000' 响应为 'hello world'</span></div><div class="line">app.get(<span class="string">'/'</span>, <span class="function"><span class="keyword">function</span> (<span class="params">req, res</span>) </span>&#123;</div><div class="line">    res.end(<span class="string">'hello world'</span>);</div><div class="line">&#125;);</div><div class="line"></div><div class="line"><span class="keyword">let</span> port = <span class="number">10000</span>;</div><div class="line">app.listen(port, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">'Express server listening on port '</span> + port);</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<p>写完代码后请提交到 repo 的 dev 分支。</p>
+<hr>
+<h2 id="创建并配置你的第一个-jenkins-项目"><a href="#创建并配置你的第一个-jenkins-项目" class="headerlink" title="创建并配置你的第一个 jenkins 项目"></a>创建并配置你的第一个 jenkins 项目</h2><p>Jenkins –&gt; 新建：</p>
+<img src="/Jenkins/jenkins-tutorials/deploy-node-server/first-jenkins-proj.jpg" alt="创建你的第一个 jenkins 项目" title="创建你的第一个 jenkins 项目">
+<p>配置（由于配置页面很长，此处不再对所有配置截图）：</p>
+<ol>
+<li><p>General</p>
+<ul>
+<li><strong>项目名称</strong>: express-hello-world</li>
+<li><input type="checkbox" checked="checked" onclick="return false;"> <strong>Restrict where this project can be run</strong></li>
+<li><strong>Label Expression</strong>: slave-node(即<a href="#创建并配置一个-nodejs-从节点备用">创建并配置一个 nodejs 从节点备用</a>中所配置的从节点)</li>
+</ul>
+</li>
+<li><p>源码管理<br> 本文使用 git，<strong>Credentials</strong> 选择 SSH</p>
+</li>
+<li><p>构建触发器</p>
+<ul>
+<li><input type="checkbox" checked="checked" onclick="return false;"> <strong>Build when a change is pushed to GitLab.</strong></li>
+<li>在 gitlab –&gt; project –&gt; settings –&gt; Webhooks 中配置 <strong>GitLab CI Service URL</strong> (下图中被红色块覆盖的 URL)  <img src="/Jenkins/jenkins-tutorials/deploy-node-server/config-build-trigger.jpg" alt="创建你的第一个 jenkins 项目" title="创建你的第一个 jenkins 项目">
+</li>
+</ul>
+</li>
+<li><p>构建环境</p>
+<ul>
+<li><input type="checkbox" checked="checked" onclick="return false;"> <strong>Provide Configuration files</strong><br>  按如下的 File 和 Variable 对应关系配置：<br>  <figure class="highlight yaml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="attr">Dockerfile:</span> <span class="string">DOCKERFILE</span></div><div class="line"><span class="string">compose.yml:</span> <span class="string">COMPOSE</span></div><div class="line"><span class="string">.dockerignore:</span> <span class="string">DOCKERIGNORE</span></div></pre></td></tr></table></figure>
+</li>
+<li><p><input type="checkbox" checked="checked" onclick="return false;"> <strong>Provide Node &amp; npm bin/ folder to PATH</strong><br>  <strong>NodeJS Installation</strong>: 选择一个合适的 node 版本即可</p>
+</li>
+</ul>
+</li>
+<li><p>构建</p>
+<ul>
+<li><p>增加构建步骤 –&gt; Execute shell:</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#!/bin/sh</span></div><div class="line"><span class="comment"># 如果遇到错误，则退出执行</span></div><div class="line"><span class="built_in">set</span> -e</div><div class="line"></div><div class="line"><span class="comment"># 使用 GIT_SHA 和时间戳生成 IMAGE_TAG</span></div><div class="line">GIT_SHA=`git rev-parse --short HEAD || <span class="built_in">echo</span> <span class="string">"GitNotFound"</span>`</div><div class="line">VERSION=0.1</div><div class="line">TIME=`date +%Y%m%d%H%M%S`</div><div class="line"><span class="built_in">export</span> IMAGE_TAG=<span class="variable">$VERSION</span>-<span class="variable">$GIT_SHA</span>-<span class="variable">$TIME</span></div><div class="line"></div><div class="line"><span class="comment"># 该部分脚本用于处理 jenkins in docker 的用户权限问题，目前好像没有更优雅的处理办法（建议把该部分命令提取为一个公共文件）</span></div><div class="line">DOCKER_SOCKET=/var/run/docker.sock</div><div class="line">DOCKER_GROUP=docker</div><div class="line"><span class="keyword">if</span> [ -S <span class="variable">$&#123;DOCKER_SOCKET&#125;</span> ]; <span class="keyword">then</span></div><div class="line">    DOCKER_GID=$(<span class="built_in">stat</span> -c <span class="string">'%g'</span> <span class="variable">$&#123;DOCKER_SOCKET&#125;</span>)</div><div class="line">    sudo groupadd -<span class="keyword">for</span> -g <span class="variable">$&#123;DOCKER_GID&#125;</span> <span class="variable">$&#123;DOCKER_GROUP&#125;</span></div><div class="line">    sudo usermod -aG <span class="variable">$&#123;DOCKER_GROUP&#125;</span> <span class="variable">$&#123;USER&#125;</span></div><div class="line"><span class="keyword">fi</span></div><div class="line"></div><div class="line"><span class="comment"># 删除需要重新写入的文件</span></div><div class="line">rm -f compose.yml</div><div class="line">rm -f .dockerignore</div><div class="line"></div><div class="line"><span class="comment"># 覆盖 Dockerfile（因为开发可能会提交一个不适合当前构建需求的 Dockerfile）</span></div><div class="line">cp <span class="variable">$DOCKERFILE</span> Dockerfile</div><div class="line"></div><div class="line">cp <span class="variable">$DOCKERIGNORE</span> .dockerignore</div><div class="line"></div><div class="line"><span class="comment"># 将 compose 中的 tag 替换为 $IMAGE_TAG，如果在下一步骤中配置了 Skip tag as latest，则应该执行本行命令</span></div><div class="line">sed <span class="string">"s/&lt;registry&gt;\/&lt;namespace&gt;\/express\-hello\-world\:latest/&lt;registry&gt;\/&lt;namespace&gt;\/express\-hello\-world\:<span class="variable">$&#123;IMAGE_TAG&#125;</span>/g"</span> <span class="variable">$COMPOSE</span> &gt; compose.yml</div><div class="line"></div><div class="line"><span class="comment"># 依赖安装和构建</span></div><div class="line">npm i -s</div></pre></td></tr></table></figure>
+</li>
+<li><p>增加构建步骤 –&gt; Docker Build and Publish:</p>
+  <img src="/Jenkins/jenkins-tutorials/deploy-node-server/config-docker-build-and-publish.jpg" alt="配置 docker 构建和发布" title="配置 docker 构建和发布">
+<blockquote>
+<p>此处有坑，如果 <strong>Registry credentials</strong> 一项需要使用邮箱地址作为登入账号，则需要提前在 Credentials 中添加（临时添加无法成功，貌似 bug，不知道更高版本是否修复）</p>
+</blockquote>
+</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="提交代码触发构建"><a href="#提交代码触发构建" class="headerlink" title="提交代码触发构建"></a>提交代码触发构建</h2><p>你可以进入相应项目的构建历史中查看 <strong>Console Output</strong>， 如果构建成功，控制台输出的最后一行会显示:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Finished: SUCCESS</div></pre></td></tr></table></figure>
+<p>然后你可以查看你的容器是否部署成功。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://localhost:4000/Jenkins/jenkins-tutorials/deploy-node-server/" data-id="cj5t1wpsj000o4ofa18iuvaum" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/jenkins/">jenkins</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/practices/">practices</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/Jenkins/jenkins-tutorials/integrate-lint-and-test/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Jenkins 实践（二）：集成代码静态检查和单元测试
+        
+      </div>
+    </a>
+  
+  
+    <a href="/Jenkins/jenkins-tutorials/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Jenkins 实践</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Diary/">Diary</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Jenkins/">Jenkins</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Games/">Games</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PS3/">PS3</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jenkins/">jenkins</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/practices/">practices</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Games/" style="font-size: 20px;">Games</a> <a href="/tags/PS3/" style="font-size: 20px;">PS3</a> <a href="/tags/jenkins/" style="font-size: 10px;">jenkins</a> <a href="/tags/practices/" style="font-size: 10px;">practices</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">七月 2017</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/Jenkins/jenkins-tutorials/add-docker-build/">Jenkins 实践（三）：添加 docker 构建和部署环节</a>
+          </li>
+        
+          <li>
+            <a href="/Jenkins/jenkins-tutorials/integrate-lint-and-test/">Jenkins 实践（二）：集成代码静态检查和单元测试</a>
+          </li>
+        
+          <li>
+            <a href="/Jenkins/jenkins-tutorials/deploy-node-server/">Jenkins 实践（一）：部署一个简单的 node 应用</a>
+          </li>
+        
+          <li>
+            <a href="/Jenkins/jenkins-tutorials/">Jenkins 实践</a>
+          </li>
+        
+          <li>
+            <a href="/Diary/something-thing7/">1st sth</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2017 leaf4monkey<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>
