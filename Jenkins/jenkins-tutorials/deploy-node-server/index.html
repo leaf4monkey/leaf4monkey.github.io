@@ -9,22 +9,22 @@
 <meta name="keywords" content="jenkins,practices">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Jenkins 实践（一）：部署一个简单的 node 应用">
-<meta property="og:url" content="https://leaf4monkey.github.io/Jenkins/jenkins-tutorials/deploy-node-server/index.html">
+<meta property="og:url" content="https://blog.leaf4monkey.com/Jenkins/jenkins-tutorials/deploy-node-server/index.html">
 <meta property="og:site_name" content="Leaf4monkey 的博客">
 <meta property="og:description" content="部署 Jenkins 创建并配置一个 nodejs 从节点备用 插件安装 全局工具配置 添加构建流程中会用到的文件 创建一个 Hello World 程序 创建并配置你的第一个 jenkins 项目 提交代码触发构建   部署 Jenkins推荐使用 Jenkins 的 docker 镜像部署，简单。本文中使用某云容器服务部署，使用的 docker 镜像为某云 2.19.2 版本，compos">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="https://leaf4monkey.github.io/Jenkins/jenkins-tutorials/deploy-node-server/create-slave-nodejs.jpg">
-<meta property="og:image" content="https://leaf4monkey.github.io/Jenkins/jenkins-tutorials/deploy-node-server/config-slave-nodejs.jpg">
-<meta property="og:image" content="https://leaf4monkey.github.io/Jenkins/jenkins-tutorials/deploy-node-server/global-tools-configuration.jpg">
-<meta property="og:image" content="https://leaf4monkey.github.io/Jenkins/jenkins-tutorials/deploy-node-server/global-tools-configuration-2.jpg">
-<meta property="og:image" content="https://leaf4monkey.github.io/Jenkins/jenkins-tutorials/deploy-node-server/first-jenkins-proj.jpg">
-<meta property="og:image" content="https://leaf4monkey.github.io/Jenkins/jenkins-tutorials/deploy-node-server/config-build-trigger.jpg">
-<meta property="og:image" content="https://leaf4monkey.github.io/Jenkins/jenkins-tutorials/deploy-node-server/config-docker-build-and-publish.jpg">
+<meta property="og:image" content="https://blog.leaf4monkey.com/Jenkins/jenkins-tutorials/deploy-node-server/create-slave-nodejs.jpg">
+<meta property="og:image" content="https://blog.leaf4monkey.com/Jenkins/jenkins-tutorials/deploy-node-server/config-slave-nodejs.jpg">
+<meta property="og:image" content="https://blog.leaf4monkey.com/Jenkins/jenkins-tutorials/deploy-node-server/global-tools-configuration.jpg">
+<meta property="og:image" content="https://blog.leaf4monkey.com/Jenkins/jenkins-tutorials/deploy-node-server/global-tools-configuration-2.jpg">
+<meta property="og:image" content="https://blog.leaf4monkey.com/Jenkins/jenkins-tutorials/deploy-node-server/first-jenkins-proj.jpg">
+<meta property="og:image" content="https://blog.leaf4monkey.com/Jenkins/jenkins-tutorials/deploy-node-server/config-build-trigger.jpg">
+<meta property="og:image" content="https://blog.leaf4monkey.com/Jenkins/jenkins-tutorials/deploy-node-server/config-docker-build-and-publish.jpg">
 <meta property="og:updated_time" content="2017-08-01T05:19:07.686Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Jenkins 实践（一）：部署一个简单的 node 应用">
 <meta name="twitter:description" content="部署 Jenkins 创建并配置一个 nodejs 从节点备用 插件安装 全局工具配置 添加构建流程中会用到的文件 创建一个 Hello World 程序 创建并配置你的第一个 jenkins 项目 提交代码触发构建   部署 Jenkins推荐使用 Jenkins 的 docker 镜像部署，简单。本文中使用某云容器服务部署，使用的 docker 镜像为某云 2.19.2 版本，compos">
-<meta name="twitter:image" content="https://leaf4monkey.github.io/Jenkins/jenkins-tutorials/deploy-node-server/create-slave-nodejs.jpg">
+<meta name="twitter:image" content="https://blog.leaf4monkey.com/Jenkins/jenkins-tutorials/deploy-node-server/create-slave-nodejs.jpg">
   
     <link rel="alternate" href="/atom.xml" title="Leaf4monkey 的博客" type="application/atom+xml">
   
@@ -71,7 +71,7 @@
         <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
       </nav>
       <div id="search-form-wrap">
-        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://leaf4monkey.github.io"></form>
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://blog.leaf4monkey.com"></form>
       </div>
     </div>
   </div>
@@ -213,7 +213,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://leaf4monkey.github.io/Jenkins/jenkins-tutorials/deploy-node-server/" data-id="cj6bmfauj0008j0fa5itxboyn" class="article-share-link">Share</a>
+      <a data-url="https://blog.leaf4monkey.com/Jenkins/jenkins-tutorials/deploy-node-server/" data-id="cj6bmfauj0008j0fa5itxboyn" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/jenkins/">jenkins</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/practices/">practices</a></li></ul>
